@@ -21,3 +21,12 @@ resource "aws_instance" "web" {
     Name = "TerraformBasicMachine"
   }
 }
+
+output "instance_ami_using" {
+  value = aws_instance.web.ami
+}
+
+output "instance_public_ip" {
+  value = aws_instance.web.public_ip
+  description = "public ip of aws ec2 instance"
+}
