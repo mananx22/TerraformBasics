@@ -14,15 +14,20 @@ provider "aws" {
   #   secret_key = $AWS_SECRET_ACCESS_KEY 
 }
 
+variable "count-length" {
+  type = number
+  default = 2
+}
+
 resource "random_string" "mananrandom" {
-  count = 3
+  count = var.count-length
   length           = 6
   special          = false
   override_special = false
 }
 
 resource "aws_instance" "web" {
-  count = 3
+  count = var.count-length
   ami           = "ami-01a4f99c4ac11b03c"
   instance_type = "t2.micro"
   tags = {
