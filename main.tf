@@ -9,16 +9,36 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "us-east-1"
+  region = "ap-south-1"
   #   access_key = $AWS_ACCESS_KEY_ID
   #   secret_key = $AWS_SECRET_ACCESS_KEY 
 }
 
+resource "random_string" "mananrandom" {
+  length           = 6
+  special          = false
+  override_special = false
+}
+
+resource "random_string" "mananrandom2" {
+  length           = 6
+  special          = false
+  override_special = false
+}
+
 resource "aws_instance" "web" {
-  ami           = "ami-052465340e6b59fc0"
+  ami           = "ami-01a4f99c4ac11b03c"
   instance_type = "t2.micro"
   tags = {
-    Name = "TerraformBasicMachine"
+    Name = join("-", ["TerraformBasicMachine" , random_string.mananrandom.result])
+  }
+}
+
+resource "aws_instance" "web2" {
+  ami           = "ami-01a4f99c4ac11b03c"
+  instance_type = "t2.micro"
+  tags = {
+    Name = join("-", ["TerraformBasicMachine" , random_string.mananrandom2.result])
   }
 }
 
