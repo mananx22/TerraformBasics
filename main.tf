@@ -31,14 +31,6 @@ resource "aws_instance" "web" {
 }
 
  output "Instance-ami" {
-  value = aws_instance.web[*].ami
+  value = [for i in aws_instance.web[*]: join( " : " ,["ami used is", i.ami, "& ip address is ", i.public_ip, "  & volume size (GB) is", i.root_block_device[0].volume_size])]
+  description = "public ip of aws ec2 instance"
 }
-
- output "Instance-Ip" {
-  value = aws_instance.web[*].public_ip
-}
-
- output "Instance-volume" {
-  value = aws_instance.web[*].root_block_device[0].volume_size
-}
- 
