@@ -14,11 +14,6 @@ provider "aws" {
   #   secret_key = $AWS_SECRET_ACCESS_KEY 
 }
 
-variable "count-length" {
-  type = number
-  default = 2
-}
-
 resource "random_string" "mananrandom" {
   count = var.count-length
   length           = 6
@@ -35,7 +30,3 @@ resource "aws_instance" "web" {
   }
 }
 
- output "Instance-ami" {
-  value = [for i in aws_instance.web[*]: join( " : " ,["ami used is", i.ami, "& ip address is ", i.public_ip, "  & volume size (GB) is", i.root_block_device[0].volume_size])]
-  description = "public ip of aws ec2 instance"
-}
