@@ -30,3 +30,9 @@ output "instance_public_ip" {
   value = aws_instance.web.public_ip
   description = "public ip of aws ec2 instance"
 }
+
+ output "Instance-Details" {
+  value = join( " : " ,["ami used is", aws_instance.web.ami,"  & volume size (GB) is", aws_instance.web.root_block_device[0].volume_size])
+  description = "public ip of aws ec2 instance"
+}
+ 
