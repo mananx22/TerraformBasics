@@ -1,32 +1,9 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-  }
-}
-
-# Configure the AWS Provider
-provider "aws" {
-  region = "ap-south-1"
-  #   access_key = $AWS_ACCESS_KEY_ID
-  #   secret_key = $AWS_SECRET_ACCESS_KEY 
-}
-
-resource "random_string" "mananrandom" {
-  count = var.count-length
-  length           = 6
-  special          = false
-  override_special = false
-}
-
-resource "aws_instance" "web" {
-  count = var.count-length
-  ami           = "ami-01a4f99c4ac11b03c"
-  instance_type = "t2.micro"
-  tags = {
-    Name = join("-", ["TerraformBasicMachine" , random_string.mananrandom[count.index].result])
-  }
+module "ec2Module" {
+  source    = "./ec2Module"
+  ami_in    = "ami-01a4f99c4ac11b03c"
+  type_in   = "t2.micro"
+  suffix_in = "TerraformBasicMachine"
+  count_in  = 2
+  length_in = 6
 }
 
