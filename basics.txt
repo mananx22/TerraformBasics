@@ -1,0 +1,237 @@
+What terraform is & how it operates.
+
+
+
+*** INSTAllation
+
+visit this website 
+https://releases.hashicorp.com/terraform/0.14.5/
+
+wget https://releases.hashicorp.com/terraform/0.14.5/terraform_0.14.5_linux_amd64.zip
+
+apt install unzip
+
+unzip terraform_0.14.5_linux_amd64.zip 
+
+cp terraform /usr/bin/
+
+terraform -v
+
+
+
+
+
+
+***  Basics v1
+
+5 main terraform commands
+https://developer.hashicorp.com/terraform/cli/commands
+Main commands:
+terraform init          Prepare your working directory for other commands
+  
+validate      Check whether the configuration is valid
+
+plan          Show changes required by the current configuration
+
+apply         Create or update infrastructure
+
+destroy       Destroy previously-created infrastructure
+
+
+
+
+
+
+
+***  Basics v2
+
+now we create a main.tf file which will contain information regarding our provider.
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
+
+# Configure the AWS Provider
+provider "aws" {
+  region = "us-east-1"
+#   access_key = $AWS_ACCESS_KEY_ID
+#   secret_key = $AWS_SECRET_ACCESS_KEY 
+}
+
+
+version info is provided so that only this provider version is used and our terraform script stays intact.
+
+once we declare environment variables AWS_SECRET_ACCESS_KEY & AWS_ACCESS_KEY_ID we write our main.tf
+
+terraform init
+
+terraform plan --help
+
+terraform plan -out=plan1
+
+
+How to find terraform resource configs.
+https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance
+
+
+
+
+
+
+
+
+*** tfstate & tfstate backup
+"serial": 3,
+terraform state list command
+
+*** Providers
+https://registry.terraform.io/browse/providers
+
+
+
+
+
+
+
+
+***  Basics Aws Resources
+
+
+resource "resource_type" "resource_name" 
+{ 
+	property : “value”
+}
+
+
+
+
+* EC2 Machines
+
+resource "aws_instance" "web" {
+  ami           = "ami-052465340e6b59fc0"
+  instance_type = "t2.micro"
+  tags = {
+    Name = "TerraformBasicMachine"
+  }
+}
+
+
+terraform destroy --auto-approve will destroy all resources. make changes to tfstate file.
+
+
+*** Terrafrom console
+aws_instance.web.ami
+aws_instance.web.public_ip
+
+aws_instance.web.*
+
+
+
+
+
+
+
+*** Teraform outputs
+output "instance_ami_using" {
+  value = aws_instance.web.ami
+}
+
+output "instance_public_ip" {
+  value = aws_instance.web.public_ip
+  description = "public ip of aws ec2 instance"
+}
+
+
+terrafrom output
+
+
+
+
+
+
+*** Terraform functions
+https://developer.hashicorp.com/terraform/language/functions
+
+* Join function
+https://developer.hashicorp.com/terraform/language/functions/join
+
+value = join( " : " ,["ami used is", aws_instance.web.ami,"  & volume size (GB) is", aws_instance.web.root_block_device[0].volume_size])
+
+
+*** Random Resource
+
+resource "random_string" "mananrandom" {
+  length           = 6
+  special          = false
+  override_special = false
+}
+
+
+
+*** Count expression
+
+resource "random_string" "mananrandom" {
+  count = 3
+  length           = 6
+  special          = false
+  override_special = false
+}
+
+*** splat expression
+
+*** for loop
+[for i in aws_instance.web[*]: i.public_ip]
+
+
+output "Instance-ami" {
+  value = [for i in aws_instance.web[*]: join( " : " ,["ami used is", i.ami, "& ip address is ", i.public_ip, "  & volume size (GB) is", i.root_block_device[0].volume_size])]
+  description = "public ip of aws ec2 instance"
+}
+
+
+*** Variables
+https://developer.hashicorp.com/terraform/language/values/variables
+
+variable "count-length" {
+  type = number
+  default = 2
+}
+
+var.count-length
+
+*** Terrafrom taint & untaint resource
+terraform plan
+terraform state list
+terraform taint random_string.mananrandom[1]
+terraform plan
+terraform untaint random_string.mananrandom[1]
+
+*** Terraform splits
+
+variables.tf, outputs.tf
+
+
+*** Module Terraform
+
+module "ec2Module" {
+  source    = "./ec2Module"
+  ami_in    = "ami-01a4f99c4ac11b03c"
+  type_in   = "t2.micro"
+  suffix_in = "TerraformBasicMachine"
+  count_in  = 2
+  length_in = 6
+}
+
+
+*** module.ec2Module.mananec2
+
+output "mananec2" {
+  value = aws_instance.web
+}
+
+variable "ami_in" {}
